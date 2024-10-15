@@ -1,0 +1,65 @@
+﻿@page "/login"
+@attribute [AllowAnonymous]
+
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Login</PageTitle>
+
+<HeadContent>
+  <style media="screen">
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: fade 0.2s ease-in-out forwards;
+    }
+
+    h1 {
+      font-size: 35px;
+      font-weight: 100;
+      text-align: center;
+    }
+  </style>
+</HeadContent>
+
+
+      <EditForm FormName="LoginForm" Model="@LoginData" OnValidSubmit="@Submit">
+
+        <DataAnnotationsValidator />
+
+          <Input Style="width: 100%" @bind-Value="LoginData.UserName" Label="UserName" />
+          <InputPassword Style="width: 100%" @bind-Value="LoginData.Password" Label="Password" TextFieldType="TextFieldType.Password" />
+          <Button Type="@ButtonType.Primary" HtmlType="submit" Style="width: 100%">Login</Button>
+
+
+      </EditForm>
+
+
+@code {
+  [SupplyParameterFromForm]
+  private LoginForm LoginData { get; set; } = new LoginForm();
+
+  [CascadingParameter]
+  private HttpContext? HttpContext { get; set; }
+
+  protected override void OnInitialized()
+  {
+    LoginData ??= new();
+  }
+
+  private void Submit()
+  {
+    String test;
+    test = LoginData.UserName;
+  }
+
+  class LoginForm
+  {
+    [Required(ErrorMessage = "ユーザー名を入力してください。")]
+    public string UserName { get; set; } = "";
+
+    [Required(ErrorMessage = "パスワードを入力してください。")]
+    public string Password { get; set; } = "";
+  }
+}
