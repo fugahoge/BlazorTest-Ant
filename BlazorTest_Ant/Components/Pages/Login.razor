@@ -2,6 +2,11 @@
 @attribute [AllowAnonymous]
 
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+
+@inject NavigationManager NavigationManager
 
 <PageTitle>Login</PageTitle>
 
@@ -48,10 +53,47 @@
     LoginData ??= new();
   }
 
-  private void Submit()
+  private async Task Submit()
   {
-    String test;
-    test = LoginData.UserName;
+    _ = HttpContext ?? throw new InvalidOperationException("Static SSR で実行してください。");
+
+    ClaimsIdentity? identity = null;
+
+    // ログイン確認（本来であればここでログイン機能を実行する）
+    if (LoginData.UserName == "admin" && LoginData.Password == "admin")
+    {
+      identity = new(
+          [new Claim(ClaimTypes.Name, LoginData.UserName), new Claim(ClaimTypes.Role, "Administrator")],
+          CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+    else if (LoginData.UserName == "user" && LoginData.Password == "user")
+    {
+      identity = new(
+          [new Claim(ClaimTypes.Name, LoginData.UserName), new Claim(ClaimTypes.Role, "User")],
+          CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+
+    // ログイン処理
+    if (identity != null)
+    {
+      // ログイン
+      await HttpContext.SignInAsync(
+          CookieAuthenticationDefaults.AuthenticationScheme,
+          new ClaimsPrincipal(identity)
+      );
+
+      // トップページに遷移
+      NavigationManager.NavigateTo(
+          "/",
+          forceLoad: true
+      );
+    }
+    else
+    {
+      // ログイン失敗
+      //      ValidationMessageStore.Add(EditContext.Field(""), "ログインに失敗しました。");
+
+    }
   }
 
   class LoginForm

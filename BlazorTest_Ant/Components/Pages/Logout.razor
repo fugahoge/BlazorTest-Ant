@@ -1,0 +1,29 @@
+﻿@page "/logout"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject IConfiguration Configuration
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager NavigationManager
+
+<PageTitle></PageTitle>
+
+<h2>Logout</h2>
+
+@code {
+
+   // ページにアクセスしたらログアウト処理を実行する
+  protected override async Task OnInitializedAsync()
+  {
+    _ = HttpContextAccessor.HttpContext ?? throw new InvalidOperationException("Static SSR で実行してください。");
+
+    // ログアウト
+    await HttpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+    // トップページに遷移
+    NavigationManager.NavigateTo(
+        "/",
+        forceLoad: true
+    );
+  }
+
+}

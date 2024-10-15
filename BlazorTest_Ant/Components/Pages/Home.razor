@@ -7,3 +7,25 @@
 Welcome to your new app.
 
 <Button Type="@ButtonType.Primary">Hello World!</Button>
+
+<div>
+  <AuthorizeView>
+
+    <Authorized>
+      @context.User.Identity!.Name さん、こんにちは。
+    </Authorized>
+
+    <NotAuthorized>
+      未ログイン
+    </NotAuthorized>
+
+  </AuthorizeView>
+
+  <AuthorizeView Roles="Administrator">
+    あなたのロールは管理者です。
+  </AuthorizeView>
+
+  <AuthorizeView Roles="User">
+    あなたのロールは一般ユーザーです。
+  </AuthorizeView>
+</div>
